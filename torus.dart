@@ -1,33 +1,61 @@
 import 'dart:math';
-import 'point.dart';
+import 'point3c.dart';
 
+int R = 10;
+int r = 5;
+double alpha = 0.1;
+double beta = 0.1;
 void main(List<String> args) {
-  int R = 10;
-  int r = 5;
-
-  double alpha = 0.1;
-  double beta = 0.1;
-
   List<Point3D> points = [];
 
   double tempA = 0;
   while (tempA < 2 * pi) {
     double tempB = 0;
     while (tempB < 2 * pi) {
-      points.add(
-        Point3D(
-          ((R + (r * cos(tempA))) * cos(tempB)).round(),
-          (((R + (r * cos(tempA))) * sin(tempB)).round()) + R + r + 1,
-          (r * sin(tempA)).round(),
-        ),
-      );
+      int x = ((R + (r * cos(tempA))) * cos(tempB)).round();
+      int y = (((R + (r * cos(tempA))) * sin(tempB)).round());
+      int z = (r * sin(tempA)).round();
+      points.add(new Point3D(x, z, y));
       tempB += beta;
     }
     tempA += alpha;
   }
+  printPoints(points);
+}
+
+List<Point3D> givePerspective(List<Point3D> points) {
+  List<Point3D> newPoints = [];
+  for (var p in points) {
+    try {
+      int z = p.z + R + r + 1;
+      z = (z / 10).round();
+
+      int x = p.x ~/ z;
+      int y = p.y ~/ z;
+      int index = newPoints.indexWhere((p) => p.x == x && p.y == y);
+      if (index == -1) {
+        newPoints.add(new Point3D(x, y, p.z));
+      } else {
+        if (newPoints[index].z < p.z) {
+          newPoints[index] = new Point3D(x, y, p.z);
+        }
+      }
+    } on UnsupportedError catch (e) {
+      print(e);
+    } on Exception catch (e) {
+      print(e);
+    }
+  }
+  return newPoints;
+}
+
+void printPoints(List<Point3D> points) {
   for (var p in points) {
     print('${p.toString()}');
   }
+}
+
+void calculateMinMax(List<Point3D> points) {
   int maxX = -1000000;
   int maxY = -1000000;
   int maxZ = -1000000;
