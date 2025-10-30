@@ -1,7 +1,7 @@
 class Point3D {
   static int _counter = 0;
   final int id;
-  final int x, y, z;
+  final double x, y, z;
 
   Point3D(this.x, this.y, this.z) : id = _counter++ {}
 

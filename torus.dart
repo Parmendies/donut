@@ -12,9 +12,10 @@ void main(List<String> args) {
   while (tempA < 2 * pi) {
     double tempB = 0;
     while (tempB < 2 * pi) {
-      int x = ((R + (r * cos(tempA))) * cos(tempB)).round();
-      int y = (((R + (r * cos(tempA))) * sin(tempB)).round());
-      int z = (r * sin(tempA)).round();
+      double x = ((R + (r * cos(tempA))) * cos(tempB));
+      double y = (((R + (r * cos(tempA))) * sin(tempB)));
+      double z = (r * sin(tempA));
+
       points.add(new Point3D(x, z, y));
       tempB += beta;
     }
@@ -23,30 +24,26 @@ void main(List<String> args) {
   printPoints(points);
 }
 
-List<Point3D> givePerspective(List<Point3D> points) {
-  List<Point3D> newPoints = [];
-  for (var p in points) {
-    try {
-      int z = p.z + R + r + 1;
-      z = (z / 10).round();
-
-      int x = p.x ~/ z;
-      int y = p.y ~/ z;
-      int index = newPoints.indexWhere((p) => p.x == x && p.y == y);
-      if (index == -1) {
-        newPoints.add(new Point3D(x, y, p.z));
-      } else {
-        if (newPoints[index].z < p.z) {
-          newPoints[index] = new Point3D(x, y, p.z);
-        }
-      }
-    } on UnsupportedError catch (e) {
-      print(e);
-    } on Exception catch (e) {
-      print(e);
-    }
+normalize(double min, double max, List<Point3D> list) {
+  List<double> zvalues = [];
+  for (var point in list) {
+    zvalues.add(((point.z - min) / (max - min)) + 1);
   }
-  return newPoints;
+  return zvalues;
+}
+
+perspective(List<Point3D> points) {
+  var minnmax = calculateMinMax(points);
+  List<Point3D> newpoints = [];
+  double maxY = minnmax[2];
+  double minY = minnmax[3];
+  List<double> yvalues = normalize(minY, maxY, points);
+  for (int i = 0; i < points.length; i++) {
+    newpoints.add(
+      Point3D(points[i].x / yvalues[i], points[i].y, points[i].z / yvalues[i]),
+    );
+  }
+  return newpoints;
 }
 
 void printPoints(List<Point3D> points) {
@@ -55,13 +52,13 @@ void printPoints(List<Point3D> points) {
   }
 }
 
-void calculateMinMax(List<Point3D> points) {
-  int maxX = -1000000;
-  int maxY = -1000000;
-  int maxZ = -1000000;
-  int minX = 1000000;
-  int minY = 1000000;
-  int minZ = 1000000;
+List<double> calculateMinMax(List<Point3D> points) {
+  double maxX = -1000000;
+  double maxY = -1000000;
+  double maxZ = -1000000;
+  double minX = 1000000;
+  double minY = 1000000;
+  double minZ = 1000000;
   for (var p in points) {
     if (p.x > maxX) {
       maxX = p.x;
@@ -82,13 +79,5 @@ void calculateMinMax(List<Point3D> points) {
       minZ = p.z;
     }
   }
-
-  print(maxX);
-  print(minX);
-  print('***************');
-  print(maxY);
-  print(minY);
-  print('***************');
-  print(maxZ);
-  print(minZ);
+  return [maxX, minX, maxY, minY, maxZ, minZ];
 }
