@@ -21,15 +21,23 @@ void main(List<String> args) {
     }
     tempA += alpha;
   }
-  printPoints(points);
+  printPoints(perspective(points));
 }
 
 normalize(double min, double max, List<Point3D> list) {
-  List<double> zvalues = [];
+  List<double> yvalues = [];
   for (var point in list) {
-    zvalues.add(((point.z - min) / (max - min)) + 1);
+    yvalues.add(((point.y - min) / (max - min)) + 1);
   }
-  return zvalues;
+  var minValue = yvalues.reduce(
+    (value, element) => value < element ? value : element,
+  );
+  var maxValue = yvalues.reduce(
+    (value, element) => value > element ? value : element,
+  );
+  print("$minValue, $maxValue");
+
+  return yvalues;
 }
 
 perspective(List<Point3D> points) {
@@ -38,17 +46,26 @@ perspective(List<Point3D> points) {
   double maxY = minnmax[2];
   double minY = minnmax[3];
   List<double> yvalues = normalize(minY, maxY, points);
+
   for (int i = 0; i < points.length; i++) {
     newpoints.add(
-      Point3D(points[i].x / yvalues[i], points[i].y, points[i].z / yvalues[i]),
+      Point3D(points[i].x / yvalues[i], yvalues[i], points[i].z / yvalues[i]),
     );
   }
+
+  print(points.length);
   return newpoints;
 }
 
 void printPoints(List<Point3D> points) {
   for (var p in points) {
     print('${p.toString()}');
+  }
+}
+
+printPointFirstTen(points) {
+  for (int i = 0; i < 10; i++) {
+    print('${points[i].toString()}');
   }
 }
 
@@ -59,6 +76,7 @@ List<double> calculateMinMax(List<Point3D> points) {
   double minX = 1000000;
   double minY = 1000000;
   double minZ = 1000000;
+  points.reduce((value, element) => value.x < element.x ? value : element);
   for (var p in points) {
     if (p.x > maxX) {
       maxX = p.x;
@@ -79,5 +97,8 @@ List<double> calculateMinMax(List<Point3D> points) {
       minZ = p.z;
     }
   }
-  return [maxX, minX, maxY, minY, maxZ, minZ];
+
+  var a = [maxX, minX, maxY, minY, maxZ, minZ];
+  //print(a);
+  return a;
 }

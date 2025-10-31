@@ -7,6 +7,6 @@ class Point3D {
 
   @override
   String toString() {
-    return "($x, $y, $z) id: $id";
+    return "($x, $y, $z)";
   }
 }
