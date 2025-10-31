@@ -1,10 +1,11 @@
 import 'dart:math';
-import 'point3c.dart';
+import 'point3d.dart';
 
 int R = 10;
 int r = 5;
 double alpha = 0.1;
 double beta = 0.1;
+
 void main(List<String> args) {
   List<Point3D> points = [];
 
@@ -21,21 +22,62 @@ void main(List<String> args) {
     }
     tempA += alpha;
   }
-  printPoints(perspective(points));
+  var per = perspective(points);
+  var rounded = roundAll(per);
+  var behindRemoved = removeBehind(rounded);
 }
 
-normalize(double min, double max, List<Point3D> list) {
-  List<double> yvalues = [];
-  for (var point in list) {
-    yvalues.add(((point.y - min) / (max - min)) + 1);
+removeBehind(List<Point3D> points) {
+  var minMaxList = calculateMinMax(points);
+  List<List<Point3D?>> list = List.generate(
+    //TODO
+    300,
+    (index) => List.generate(300, (index) => null),
+  );
+
+  for (var i = 0; i < points.length; i++) {
+    var newPoint = Point3D(
+      points[i].x + minMaxList[0],
+      points[i].y,
+      points[i].z + minMaxList[4],
+    );
+    if (list[newPoint.x.toInt()][newPoint.z.toInt()] == null) {
+      list[newPoint.x.toInt()][newPoint.z.toInt()] = newPoint;
+    } else {
+      if (list[newPoint.x.toInt()][newPoint.z.toInt()]!.y < newPoint.y) {
+        list[newPoint.x.toInt()][newPoint.z.toInt()] = newPoint;
+      }
+    }
   }
-  var minValue = yvalues.reduce(
-    (value, element) => value < element ? value : element,
-  );
-  var maxValue = yvalues.reduce(
-    (value, element) => value > element ? value : element,
-  );
-  print("$minValue, $maxValue");
+  for (var element in list) {
+    element.removeWhere((element) => element == null);
+  }
+  list.removeWhere((element) => element.isEmpty);
+  print(list);
+  return list;
+}
+
+roundAll(List<Point3D> points) {
+  List<Point3D> newpoints = [];
+  for (var element in points) {
+    newpoints.add(
+      Point3D(
+        (element.x * 5).round().toDouble(),
+        (element.y * 5).round().toDouble(),
+        (element.z * 5).round().toDouble(),
+      ),
+    );
+  }
+  return newpoints;
+}
+
+normalize(minMaxList, List<Point3D> list) {
+  List<double> yvalues = [];
+  var minY = minMaxList[3];
+  var maxY = minMaxList[2];
+  for (var point in list) {
+    yvalues.add(((point.y - minY) / (maxY - minY)) + 1);
+  }
 
   return yvalues;
 }
@@ -43,9 +85,7 @@ normalize(double min, double max, List<Point3D> list) {
 perspective(List<Point3D> points) {
   var minnmax = calculateMinMax(points);
   List<Point3D> newpoints = [];
-  double maxY = minnmax[2];
-  double minY = minnmax[3];
-  List<double> yvalues = normalize(minY, maxY, points);
+  List<double> yvalues = normalize(minnmax, points);
 
   for (int i = 0; i < points.length; i++) {
     newpoints.add(
@@ -53,7 +93,6 @@ perspective(List<Point3D> points) {
     );
   }
 
-  print(points.length);
   return newpoints;
 }
 
