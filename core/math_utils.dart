@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:math' as math;
 import 'point3d.dart';
 
 List<Point3D> calculatePoints(int R, int r, double alpha, double beta) {
@@ -9,7 +10,7 @@ List<Point3D> calculatePoints(int R, int r, double alpha, double beta) {
     while (tempB < 2 * pi) {
       double x = ((R + (r * cos(tempA))) * cos(tempB));
       double y = (((R + (r * cos(tempA))) * sin(tempB)));
-      double z = (r * sin(tempA));
+      double z = (r * sin(tempA)) + R + r + 1;
       points.add(new Point3D(x, z, y));
       tempB += beta;
     }
@@ -49,3 +50,21 @@ List<double> normalize(List<double> minMaxList, List<Point3D> points) {
 
   return yValues;
 }
+
+rotateMatris(List<Point3D> points, double angle) {
+  List<Point3D> rotatedPoints = [];
+  angle = deg2rad(angle);
+  double cosA = cos(angle);
+  double sinA = sin(angle);
+
+  for (var point in points) {
+    double x = point.x * cosA - point.y * sinA;
+    double y = point.x * sinA + point.y * cosA;
+
+    rotatedPoints.add(Point3D(x, y, point.z));
+  }
+
+  return rotatedPoints;
+}
+
+double deg2rad(double deg) => deg * math.pi / 180.0;

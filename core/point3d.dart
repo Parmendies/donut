@@ -9,4 +9,8 @@ class Point3D {
   String toString() {
     return "($x, $y, $z)";
   }
+
+  static bool isXYequal(Point3D a, Point3D b) {
+    return a.x == b.x && a.z == b.z;
+  }
 }

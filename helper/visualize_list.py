@@ -112,7 +112,7 @@ def visualize_interactive_3d(points):
 # Ana program
 if __name__ == "__main__":
     try:
-        points = parse_dart_output("o_list.txt")
+        points = parse_dart_output("core/o.txt")
         print(f"{len(points)} nokta yüklendi o_list.txt'den.")
     except FileNotFoundError:
         print("⚠️ 'o_list.txt' bulunamadı! Lütfen dosyayı bu klasöre ekleyin.")

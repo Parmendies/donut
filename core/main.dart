@@ -10,7 +10,11 @@ double beta = 0.1;
 
 void main(List<String> args) {
   List<Point3D> points = calculatePoints(R, r, alpha, beta);
+  points = rotateMatris(points, 45);
+  /* 
   var per = perspective(points);
-  var rounded = roundAll(per);
-  removeBehind(rounded);
+  var b = roundAll(per);
+
+  var clean2 = removeBehind(b); */
+  print(points);
 }
