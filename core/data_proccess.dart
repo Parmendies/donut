@@ -3,7 +3,7 @@ import 'math_utils.dart';
 
 List<Point3D> roundAll(List<Point3D> points) {
   List<Point3D> newPoints = [];
-  const double carpan = 1.50;
+  const double carpan = 2;
 
   for (var element in points) {
     newPoints.add(
@@ -17,38 +17,40 @@ List<Point3D> roundAll(List<Point3D> points) {
   return newPoints;
 }
 
-List<Point3D> removeBehind(List<Point3D> points) {
+List<Point3D> removeBehind(List<Point3D> points, [bool shouldPrint = false]) {
   var minMaxList = calculateMinMax(points);
-
-  //TODO dynamic matris
+  var maxX = minMaxList[0];
+  var maxZ = minMaxList[2];
   List<List<Point3D?>> matris = List.generate(
-    1000,
-    (index) => List.generate(1000, (index) => null),
+    5000,
+    (index) => List.generate(5000, (index) => null),
   );
-  int added = 0;
-  int collided = 0;
+  int empty = 0;
+  int conflict = 0;
+  int passed = 0;
+  int replaced = 0;
 
   for (var i = 0; i < points.length; i++) {
-    var newPoint = Point3D(
-      points[i].x + minMaxList[0],
-      points[i].y,
-      points[i].z + minMaxList[4],
-    );
+    var indexPoint = Point3D(points[i].x, points[i].y, points[i].z);
 
-    if (matris[newPoint.x.toInt()][newPoint.z.toInt()] == null) {
-      added++;
-      matris[newPoint.x.toInt()][newPoint.z.toInt()] = newPoint;
+    if (matris[indexPoint.x.toInt()][indexPoint.z.toInt()] == null) {
+      empty++;
+      matris[indexPoint.x.toInt()][indexPoint.z.toInt()] = indexPoint;
     } else {
+      conflict++;
+
       if (Point3D.isXYequal(
-        matris[newPoint.x.toInt()][newPoint.z.toInt()]!,
-        newPoint,
+        matris[indexPoint.x.toInt()][indexPoint.z.toInt()]!,
+        indexPoint,
       )) {
-        if (matris[newPoint.x.toInt()][newPoint.z.toInt()]!.y < newPoint.y) {
-          collided++;
-          matris[newPoint.x.toInt()][newPoint.z.toInt()] = newPoint;
+        if (matris[indexPoint.x.toInt()][indexPoint.z.toInt()]!.y <
+            indexPoint.y) {
+          replaced++;
+          matris[indexPoint.x.toInt()][indexPoint.z.toInt()] = indexPoint;
+        } else {
+          passed++;
         }
-      }
-      matris[newPoint.x.toInt()][newPoint.z.toInt()] = newPoint;
+      } else {}
     }
   }
 
@@ -56,7 +58,12 @@ List<Point3D> removeBehind(List<Point3D> points) {
   for (var element in matris) {
     element.removeWhere((element) => element == null);
   }
-  //    print("added $added, collided: $collided");
+
+  if (shouldPrint) {
+    print(
+      "empty: $empty, conflict: $conflict, replaced: $replaced, passed: $passed",
+    );
+  }
 
   return matris.expand((e) => e).whereType<Point3D>().toList();
 }

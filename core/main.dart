@@ -5,16 +5,70 @@ import 'visualize.dart';
 
 int R = 10;
 int r = 5;
-double alpha = 0.1;
-double beta = 0.1;
+double alpha = 0.05;
+double beta = 0.05;
+int screenWidth = 100;
+int screenHeight = 100;
 
 void main(List<String> args) {
   List<Point3D> points = calculatePoints(R, r, alpha, beta);
-  points = rotateMatris(points, 45);
-  /* 
-  var per = perspective(points);
-  var b = roundAll(per);
+  var isPerspective = true;
+  bool _shouldPrint = false;
 
-  var clean2 = removeBehind(b); */
-  print(points);
+  shouldPrint(points, _shouldPrint, isPerspective);
+}
+
+void shouldPrint(List<Point3D> points, bool shouldPrint, bool isPerspective) {
+  var minMax = calculateMinMax(points);
+  if (shouldPrint) {
+    print('Original minMax: $minMax');
+  }
+  points = rotateOnY(points, 45);
+
+  if (shouldPrint) {
+    minMax = calculateMinMax(points);
+    print('After rotation minMax: $minMax');
+  }
+  if (isPerspective) {
+    print(points);
+    return;
+  }
+
+  points = perspective(points);
+
+  if (shouldPrint) {
+    minMax = calculateMinMax(points);
+    print('After perspective minMax: $minMax');
+  }
+
+  points = minToZero(points, screenWidth, screenHeight);
+
+  if (shouldPrint) {
+    minMax = calculateMinMax(points);
+    print('After minToZero minMax: $minMax');
+  }
+
+  points = center(points, screenWidth, screenHeight);
+
+  if (shouldPrint) {
+    minMax = calculateMinMax(points);
+    print('After centred minMax: $minMax');
+  }
+
+  points = roundAll(points);
+
+  if (shouldPrint) {
+    minMax = calculateMinMax(points);
+    print('After roundAll minMax: $minMax');
+  }
+
+  points = removeBehind(points, shouldPrint);
+
+  if (shouldPrint) {
+    minMax = calculateMinMax(points);
+
+    print('After removeBehind minMax: $minMax');
+  } else {
+    print(points);
+  }
 }

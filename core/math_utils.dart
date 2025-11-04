@@ -36,13 +36,13 @@ List<double> calculateMinMax(List<Point3D> points) {
     if (p.z < minZ) minZ = p.z;
   }
 
-  return [maxX, minX, maxY, minY, maxZ, minZ];
+  return [maxX, maxY, maxZ, minX, minY, minZ];
 }
 
-List<double> normalize(List<double> minMaxList, List<Point3D> points) {
+List<double> normalizeYvalues(List<double> minMaxList, List<Point3D> points) {
   List<double> yValues = [];
-  double minY = minMaxList[3];
-  double maxY = minMaxList[2];
+  double maxY = minMaxList[1];
+  double minY = minMaxList[4];
 
   for (var point in points) {
     yValues.add(((point.y - minY) / (maxY - minY)) + 1);
@@ -51,7 +51,39 @@ List<double> normalize(List<double> minMaxList, List<Point3D> points) {
   return yValues;
 }
 
-rotateMatris(List<Point3D> points, double angle) {
+rotateOnY(List<Point3D> points, double angle) {
+  List<Point3D> rotatedPoints = [];
+  angle = deg2rad(angle);
+  double cosA = cos(angle);
+  double sinA = sin(angle);
+
+  for (var point in points) {
+    double x = point.x * cosA - point.y * sinA;
+    double y = point.x * sinA + point.y * cosA;
+
+    rotatedPoints.add(Point3D(x, y, point.z));
+  }
+
+  return rotatedPoints;
+}
+
+rotateOnX(List<Point3D> points, double angle) {
+  List<Point3D> rotatedPoints = [];
+  angle = deg2rad(angle);
+  double cosA = cos(angle);
+  double sinA = sin(angle);
+
+  for (var point in points) {
+    double y = point.y * cosA - point.z * sinA;
+    double z = point.y * sinA + point.z * cosA;
+
+    rotatedPoints.add(Point3D(point.x, y, z));
+  }
+
+  return rotatedPoints;
+}
+
+rotateOnZ(List<Point3D> points, double angle) {
   List<Point3D> rotatedPoints = [];
   angle = deg2rad(angle);
   double cosA = cos(angle);
