@@ -17,22 +17,12 @@ void main(List<String> args) {
   List<Point3D> points = calculatePoints(R, r, alpha, beta);
   var isPerspective = false;
   bool _shouldPrint = false;
-  if (_shouldPrint) {
-    while (true) {
-      x++;
-      y++;
-      print(x);
-      print(y);
-      shouldPrint(points, _shouldPrint, isPerspective, x, y, z);
-    }
-  } else {
-    bool goingUp = true;
-    while (true) {
-      x++;
-      y++;
-      z++;
-      shouldPrint(points, _shouldPrint, isPerspective, x, y, z);
-    }
+
+  while (true) {
+    x++;
+    y++;
+    z++;
+    shouldPrint(points, _shouldPrint, isPerspective, x, y, z);
   }
 }
 
