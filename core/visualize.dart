@@ -53,10 +53,10 @@ List<Point3D> minToZero(
 
 List<Point3D> center(List<Point3D> points, int screenWidth, int screenHeight) {
   var minMaxList = calculateMinMax(points);
-  var minX = minMaxList[0];
-  var maxX = minMaxList[1];
-  var minZ = minMaxList[4];
-  var maxZ = minMaxList[5];
+  var minX = minMaxList[3];
+  var maxX = minMaxList[0];
+  var minZ = minMaxList[5];
+  var maxZ = minMaxList[2];
   var donutWidth = maxX - minX;
   var donutHeight = maxZ - minZ;
   if (screenWidth > donutWidth) {
@@ -66,8 +66,34 @@ List<Point3D> center(List<Point3D> points, int screenWidth, int screenHeight) {
   }
   if (screenHeight > donutHeight) {
     for (var element in points) {
-      element.z += (screenHeight - donutWidth) / 2;
+      element.z += (screenHeight - donutHeight) / 2;
     }
   }
   return points;
+}
+
+display(List<Point3D> points, int screenSize) {
+  var displayList = List.generate(
+    screenSize + 10,
+    (index) => List.generate(screenSize + 10, (index) => ' '),
+  );
+  for (var point in points) {
+    displayList[point.x.round()][point.z.round()] = setChar(point);
+  }
+  for (var element in displayList) {
+    element.add('\n');
+  }
+  displayList.removeWhere(
+    (element) => element.every((element) {
+      return element == ' ';
+    }),
+  );
+  print(displayList);
+}
+
+List<String> charList = ["@", "#", "O", "X", "%", "*", "+", "=", "-", ",", "."];
+String setChar(Point3D point) {
+  int index = ((point.y - 1) * 10).round();
+
+  return charList[index];
 }

@@ -1,29 +1,28 @@
 import 'point3d.dart';
-import 'math_utils.dart';
 
 List<Point3D> roundAll(List<Point3D> points) {
   List<Point3D> newPoints = [];
-  const double carpan = 2;
 
   for (var element in points) {
     newPoints.add(
       Point3D(
-        (element.x * carpan).round().toDouble(),
+        (element.x).round().toDouble(),
         (element.y),
-        (element.z * carpan).round().toDouble(),
+        (element.z).round().toDouble(),
       ),
     );
   }
   return newPoints;
 }
 
-List<Point3D> removeBehind(List<Point3D> points, [bool shouldPrint = false]) {
-  var minMaxList = calculateMinMax(points);
-  var maxX = minMaxList[0];
-  var maxZ = minMaxList[2];
+List<Point3D> removeBehind(
+  List<Point3D> points,
+  int screenSize, [
+  bool shouldPrint = false,
+]) {
   List<List<Point3D?>> matris = List.generate(
-    5000,
-    (index) => List.generate(5000, (index) => null),
+    screenSize.toInt() + 2,
+    (index) => List.generate(screenSize.toInt() + 2, (index) => null),
   );
   int empty = 0;
   int conflict = 0;
@@ -43,14 +42,14 @@ List<Point3D> removeBehind(List<Point3D> points, [bool shouldPrint = false]) {
         matris[indexPoint.x.toInt()][indexPoint.z.toInt()]!,
         indexPoint,
       )) {
-        if (matris[indexPoint.x.toInt()][indexPoint.z.toInt()]!.y <
+        if (matris[indexPoint.x.toInt()][indexPoint.z.toInt()]!.y >
             indexPoint.y) {
           replaced++;
           matris[indexPoint.x.toInt()][indexPoint.z.toInt()] = indexPoint;
         } else {
           passed++;
         }
-      } else {}
+      }
     }
   }
 

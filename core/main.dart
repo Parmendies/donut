@@ -1,29 +1,58 @@
+import 'dart:math';
 import 'data_proccess.dart';
 import 'math_utils.dart';
 import 'point3d.dart';
 import 'visualize.dart';
 
-int R = 10;
-int r = 5;
-double alpha = 0.05;
-double beta = 0.05;
-int screenWidth = 100;
-int screenHeight = 100;
+int R = 50;
+int r = 25;
+double alpha = 0.02;
+double beta = 0.02;
+
+int x = 0;
+int y = 0;
+int z = 0;
 
 void main(List<String> args) {
   List<Point3D> points = calculatePoints(R, r, alpha, beta);
-  var isPerspective = true;
+  var isPerspective = false;
   bool _shouldPrint = false;
-
-  shouldPrint(points, _shouldPrint, isPerspective);
+  if (_shouldPrint) {
+    while (true) {
+      x++;
+      y++;
+      print(x);
+      print(y);
+      shouldPrint(points, _shouldPrint, isPerspective, x, y, z);
+    }
+  } else {
+    bool goingUp = true;
+    while (true) {
+      x++;
+      y++;
+      z++;
+      shouldPrint(points, _shouldPrint, isPerspective, x, y, z);
+    }
+  }
 }
 
-void shouldPrint(List<Point3D> points, bool shouldPrint, bool isPerspective) {
+void shouldPrint(
+  List<Point3D> points,
+  bool shouldPrint,
+  bool isPerspective,
+  int x,
+  int y,
+  int z,
+) {
   var minMax = calculateMinMax(points);
-  if (shouldPrint) {
-    print('Original minMax: $minMax');
-  }
-  points = rotateOnY(points, 45);
+  int screensize = max(
+    (minMax[0] - minMax[3]).abs(),
+    (minMax[2] - minMax[5]).abs(),
+  ).toInt();
+
+  points = rotateOnX(points, x.toDouble());
+  points = rotateOnY(points, y.toDouble());
+  points = rotateOnZ(points, z.toDouble());
 
   if (shouldPrint) {
     minMax = calculateMinMax(points);
@@ -41,18 +70,11 @@ void shouldPrint(List<Point3D> points, bool shouldPrint, bool isPerspective) {
     print('After perspective minMax: $minMax');
   }
 
-  points = minToZero(points, screenWidth, screenHeight);
+  points = minToZero(points, screensize, screensize);
 
   if (shouldPrint) {
     minMax = calculateMinMax(points);
     print('After minToZero minMax: $minMax');
-  }
-
-  points = center(points, screenWidth, screenHeight);
-
-  if (shouldPrint) {
-    minMax = calculateMinMax(points);
-    print('After centred minMax: $minMax');
   }
 
   points = roundAll(points);
@@ -61,14 +83,19 @@ void shouldPrint(List<Point3D> points, bool shouldPrint, bool isPerspective) {
     minMax = calculateMinMax(points);
     print('After roundAll minMax: $minMax');
   }
-
-  points = removeBehind(points, shouldPrint);
+  points = center(points, screensize, screensize);
 
   if (shouldPrint) {
     minMax = calculateMinMax(points);
+    print('After centred minMax: $minMax');
+  }
 
+  points = removeBehind(points, screensize, shouldPrint);
+
+  if (shouldPrint) {
+    minMax = calculateMinMax(points);
     print('After removeBehind minMax: $minMax');
   } else {
-    print(points);
+    display(points, screensize);
   }
 }

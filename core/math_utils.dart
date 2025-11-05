@@ -35,7 +35,8 @@ List<double> calculateMinMax(List<Point3D> points) {
     if (p.y < minY) minY = p.y;
     if (p.z < minZ) minZ = p.z;
   }
-
+  // print("x uzunluk: ${maxX - minX}, z uzunluk: ${maxZ - minZ}");
+  //        0       1     2     3     4     5
   return [maxX, maxY, maxZ, minX, minY, minZ];
 }
 
