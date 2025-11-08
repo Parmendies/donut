@@ -1,17 +1,9 @@
 import 'dart:math';
-import 'data_proccess.dart';
-import 'math_utils.dart';
-import 'point3d.dart';
-import 'visualize.dart';
-
-int R = 50;
-int r = 25;
-double alpha = 0.02;
-double beta = 0.02;
-
-int x = 0;
-int y = 0;
-int z = 0;
+import 'config.dart';
+import 'core/data_proccess.dart';
+import 'core/math_utils.dart';
+import 'core/point3d.dart';
+import 'core/visualize.dart';
 
 void main(List<String> args) {
   List<Point3D> points = calculatePoints(R, r, alpha, beta);
@@ -20,7 +12,7 @@ void main(List<String> args) {
 
   while (true) {
     x++;
-   y++;
+    y++;
     z++;
     shouldPrint(points, _shouldPrint, isPerspective, x, y, z);
   }
