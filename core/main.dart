@@ -20,7 +20,7 @@ void main(List<String> args) {
 
   while (true) {
     x++;
-    y++;
+   y++;
     z++;
     shouldPrint(points, _shouldPrint, isPerspective, x, y, z);
   }
